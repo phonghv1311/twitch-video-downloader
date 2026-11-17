@@ -51,33 +51,25 @@ twitch-video-downloader/
   - 🇧🇷 Brazil / Bồ Đào Nha (PT/BR)
   - 🇷🇺 Nga (RU)
   - 🇹🇭 Thái Lan (TH)
-- **Lọc theo số giờ / phút phát sóng:**
-  - Dưới 30 phút (`< 30p`)
-  - Trên 30 phút (`> 30p`)
-  - Dưới 1 giờ (`< 1h`)
-  - Trên 1 giờ (`> 1h`)
-  - Dưới 2 giờ (`< 2h`)
-  - Trên 2 giờ (`> 2h`)
-  - Dưới 4 giờ (`< 4h`)
-  - Trên 4 giờ (`> 4h`)
-  - Trên 8 giờ (`> 8h`)
+- **Lọc theo khoảng thời lượng (Between Từ ... Đến ...):**
+  - Cho phép chọn chính xác khoảng thời gian video (Từ Min đến Max, ví dụ: 0 - 30p, 30p - 1h, 1h - 2h, 2h - 4h, > 4h...).
 - **Sắp xếp thông minh:** Tự động ưu tiên **Lượt xem nhiều nhất (Views cao nhất)**, hoặc sắp xếp theo Mới phát sóng nhất, Thời lượng dài nhất / ngắn nhất.
 
-### 2. ⚡ Tăng công suất tải tối đa lên 30 luồng & Hiển thị Progress trực quan:
+### 2. ⚡ Tăng công suất tải tối đa lên 30 luồng & Tương thích 100% fMP4 CMAF / TS:
 - Cho phép tùy chỉnh thanh trượt số luồng từ **3 đến 30 luồng song song** (30 threads max).
-- Tận dụng băng thông tối đa để tải hàng trăm phân đoạn video cực nhanh.
+- Hỗ trợ toàn diện cả chuẩn **fMP4 (CMAF với `#EXT-X-MAP` init header)** và **MPEG-TS** truyền thống, tự động ghép nối stream mượt mà, khắc phục triệt để lỗi `error reading header`.
 - Hiển thị trực quan: % tiến độ, số phân đoạn (vd: 120/120 phân đoạn), tốc độ tải (MB/s), dung lượng đã tải (MB), thời gian ước tính còn lại (ETA).
 
-### 3. 📁 Tải nhiều video vào 1 Folder (Batch Download):
-- Tick chọn nhiều video/clips cùng lúc từ kết quả tìm kiếm.
-- Nhập **Tên thư mục lưu trữ** (ví dụ: `CapCut_Highlights_Batch`).
-- Toàn bộ video được tải tự động gom về chung thư mục `public/outputs/<TênThưMục>/` giúp bạn import cả folder vào CapCut nhanh chóng.
+### 3. 📁 Lưu video trực tiếp tại `E:\MMO\download-video-twitch` & Tải Batch vào Folder:
+- Toàn bộ video khi tải về được lưu trực tiếp vào thư mục:
+  👉 **`E:\MMO\download-video-twitch`**
+- Hỗ trợ tải hàng loạt (Batch Download) nhiều video cùng lúc vào một thư mục con bên trong `E:\MMO\download-video-twitch\<tên_folder>\` giúp bạn import cả folder vào CapCut nhanh chóng.
 
-### 4. ✂️ Cắt đoạn video (Time Trimming) với mốc Tối thiểu (Min) & Tối đa (Max):
+### 4. ✂️ Cắt đoạn video (Time Trimming) không giới hạn, mặc định tối đa 4 tiếng:
 - Nhập mốc **Bắt đầu (Start)** & **Kết thúc (End)**.
-- Đặt giới hạn **Thời lượng Tối thiểu (Min Duration)** (ví dụ: tối thiểu 30 giây).
-- Đặt giới hạn **Thời lượng Tối đa (Max Duration)** (ví dụ: tối đa 30 phút).
-- Các nút preset chọn nhanh: `+30s`, `+1m`, `+3m`, `+5m`, `+10m`.
+- Bỏ mọi giới hạn bắt buộc min/max; mặc định mốc cắt tối đa là **4 tiếng** (`04:00:00`).
+- Các nút preset chọn nhanh: `30s`, `1 phút`, `5 phút`, `15 phút`, `30 phút`, `1 tiếng`, `2 tiếng`, `4 tiếng (Max)`.
+- Chỉ báo trạng thái trực quan, không bao giờ chặn tải.
 - Chỉ báo trạng thái trực quan: Tự động cảnh báo nếu đoạn cắt dưới mức Min hoặc vượt quá mức Max.
 
 ### 5. 🎬 Mặc định tỷ lệ 16:9, tinh gọn chỉ 2 tùy chọn 1080p & 2K chuẩn CapCut:

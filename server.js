@@ -21,7 +21,7 @@ const {
   COUNTRY_OPTIONS
 } = require('./lib/twitch');
 const { checkFfmpegInstalled } = require('./lib/ffmpeg');
-const { globalTaskManager } = require('./lib/task-manager');
+const { globalTaskManager, DEFAULT_DOWNLOAD_DIR } = require('./lib/task-manager');
 
 const INITIAL_PORT = parseInt(process.env.PORT || '3080', 10);
 const PUBLIC_DIR = path.join(__dirname, 'public');
@@ -162,6 +162,7 @@ async function requestHandler(req, res) {
       status: 'ok',
       ffmpeg: ffmpegStatus,
       port: INITIAL_PORT,
+      downloadDir: DEFAULT_DOWNLOAD_DIR,
       popularCategories: POPULAR_CATEGORIES,
       countryOptions: COUNTRY_OPTIONS,
       uptime: process.uptime()
@@ -216,21 +217,14 @@ async function requestHandler(req, res) {
         return sendJSON(res, 400, { error: 'Tham số tải không hợp lệ. Cần có type và URL tải.' });
       }
 
-      const startTimeSec = parseTimeToSeconds(body.startTime);
-      const endTimeSec = body.endTime ? parseTimeToSeconds(body.endTime) : null;
+      const isTrimEnabled = Boolean(body.isTrimEnabled);
+      let startTimeSec = 0;
+      let endTimeSec = null;
 
-      // Yêu cầu 3: Ràng buộc Min Duration & Max Duration khi Cắt đoạn
-      if (body.isTrimEnabled && endTimeSec !== null) {
-        const durationCut = endTimeSec - startTimeSec;
-        const minSec = parseTimeToSeconds(body.minDuration || 0);
-        const maxSec = parseTimeToSeconds(body.maxDuration || 0);
-
-        if (minSec > 0 && durationCut < minSec) {
-          return sendJSON(res, 400, { error: `Đoạn cắt quá ngắn (${durationCut}s). Tối thiểu phải từ ${minSec}s trở lên.` });
-        }
-        if (maxSec > 0 && durationCut > maxSec) {
-          return sendJSON(res, 400, { error: `Đoạn cắt quá dài (${durationCut}s). Tối đa không vượt quá ${maxSec}s.` });
-        }
+      // Yêu cầu 2: Bỏ giới hạn min max, mặc định max là 4 tiếng
+      if (isTrimEnabled) {
+        startTimeSec = parseTimeToSeconds(body.startTime);
+        endTimeSec = body.endTime ? parseTimeToSeconds(body.endTime) : (startTimeSec + 14400); // Mặc định tối đa 4 tiếng
       }
 
       const task = await globalTaskManager.createTask({
@@ -380,7 +374,30 @@ async function requestHandler(req, res) {
     return sendJSON(res, 200, { success: true });
   }
 
-  // 12. Phục vụ file đầu ra tĩnh (/outputs/... hoặc /public/...)
+  // 12. YÊU CẦU 4: Phục vụ file video tải về từ E:\MMO\download-video-twitch (/downloads/...)
+  if (pathname.startsWith('/downloads/')) {
+    const relPath = pathname.replace(/^\/downloads\//, '');
+    const downloadFilePath = path.join(DEFAULT_DOWNLOAD_DIR, relPath);
+    if (fs.existsSync(downloadFilePath) && fs.statSync(downloadFilePath).isFile()) {
+      return serveStaticFile(req, res, downloadFilePath);
+    }
+  }
+
+  // 13. Phục vụ file đầu ra tĩnh (/outputs/... hoặc /public/...)
+  if (pathname.startsWith('/outputs/')) {
+    const relPath = pathname.replace(/^\/outputs\//, '');
+    // Kiểm tra trong thư mục E:\MMO\download-video-twitch trước
+    const downloadFilePath = path.join(DEFAULT_DOWNLOAD_DIR, relPath);
+    if (fs.existsSync(downloadFilePath) && fs.statSync(downloadFilePath).isFile()) {
+      return serveStaticFile(req, res, downloadFilePath);
+    }
+    // Kiểm tra trong thư mục tasks tạm
+    const taskFilePath = path.join(globalTaskManager.tasksDir, relPath.replace(/^tasks\//, ''));
+    if (fs.existsSync(taskFilePath) && fs.statSync(taskFilePath).isFile()) {
+      return serveStaticFile(req, res, taskFilePath);
+    }
+  }
+
   const publicFilePath = path.join(PUBLIC_DIR, pathname.replace(/^\/public\//, ''));
   if (fs.existsSync(publicFilePath) && fs.statSync(publicFilePath).isFile()) {
     return serveStaticFile(req, res, publicFilePath);
