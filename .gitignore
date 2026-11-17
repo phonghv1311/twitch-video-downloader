@@ -1,0 +1,12 @@
+node_modules/
+public/outputs/*/
+!public/outputs/tasks/
+public/outputs/tasks/*/
+!public/outputs/tasks/.gitkeep
+*.mp4
+*.mkv
+*.ts
+*.tmp
+*.log
+.DS_Store
+Thumbs.db

@@ -1,0 +1,22 @@
+{
+  "name": "twitch-video-downloader",
+  "version": "1.0.0",
+  "description": "Twitch Video & Clip Downloader Web Studio - Trình tải video VOD & Clip Twitch tốc độ cao",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "cli": "node cli.js",
+    "test": "node tests/twitch.test.js && node tests/task-manager.test.js && node tests/ffmpeg.test.js && node tests/server.test.js"
+  },
+  "keywords": [
+    "twitch",
+    "twitch-downloader",
+    "vod-downloader",
+    "clip-downloader",
+    "hls",
+    "ffmpeg",
+    "video-downloader"
+  ],
+  "author": "",
+  "license": "MIT"
+}
