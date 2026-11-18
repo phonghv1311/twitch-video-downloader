@@ -32,9 +32,9 @@ const t4 = parseTwitchUrl('https://www.twitch.tv/caseoh_/clip/SparklingBlazingAn
 assert.strictEqual(t4.type, 'clip');
 assert.strictEqual(t4.slug, 'SparklingBlazingAniseKeyboardCat-2996zL5kob_QF7xa');
 
-// 3. Kiểm thử kênh Channel (Live stream)
+// 3. Kiểm thử kênh Channel
 const t5 = parseTwitchUrl('https://www.twitch.tv/caseoh_');
-assert.strictEqual(t5.type, 'live');
+assert.strictEqual(t5.type, 'channel');
 assert.strictEqual(t5.login, 'caseoh_');
 
 // 4. Kiểm thử hàm formatDuration

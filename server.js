@@ -15,6 +15,7 @@ const {
   parseTwitchUrl,
   getClipInfo,
   getVodInfo,
+  getChannelLatestVod,
   getLiveChannelInfo,
   searchTwitchVideosAndClips,
   parseTimeToSeconds,
@@ -199,9 +200,10 @@ async function requestHandler(req, res) {
       } else if (parsedTarget.type === 'vod') {
         const vodInfo = await getVodInfo(parsedTarget.id);
         return sendJSON(res, 200, { success: true, ...vodInfo });
-      } else if (parsedTarget.type === 'live') {
-        const liveInfo = await getLiveChannelInfo(parsedTarget.login);
-        return sendJSON(res, 200, { success: true, ...liveInfo });
+      } else if (parsedTarget.type === 'channel' || parsedTarget.type === 'live') {
+        // Tải video đã live (Past Broadcast) gần nhất của kênh
+        const vodInfo = await getChannelLatestVod(parsedTarget.login);
+        return sendJSON(res, 200, { success: true, ...vodInfo });
       } else {
         return sendJSON(res, 400, {
           error: `Đường dẫn Twitch không hợp lệ.`
@@ -273,17 +275,16 @@ async function requestHandler(req, res) {
               downloadUrl: chosen.url,
               qualityLabel: resolution === '2k' ? '2K QHD (CapCut)' : '1080p Full HD (CapCut)'
             });
-          } else if (item.type === 'live' || item.isLive) {
-            const liveLogin = item.broadcasterLogin || item.login || (item.id ? item.id.replace(/^live_/, '') : '');
-            const liveInfo = await getLiveChannelInfo(liveLogin);
-            const chosen = (liveInfo.qualities || [])[0] || {};
+          } else if (item.type === 'channel') {
+            const vodInfo = await getChannelLatestVod(item.broadcasterLogin || item.login || item.id);
+            const chosen = (vodInfo.qualities || [])[0] || {};
             resolvedItems.push({
-              type: 'live',
-              title: liveInfo.title,
-              broadcaster: liveInfo.broadcaster,
-              game: liveInfo.game,
-              thumbnailUrl: liveInfo.thumbnailUrl,
-              duration: 0,
+              type: 'vod',
+              title: vodInfo.title,
+              broadcaster: vodInfo.broadcaster,
+              game: vodInfo.game,
+              thumbnailUrl: vodInfo.thumbnailUrl,
+              duration: vodInfo.durationSeconds,
               subM3u8Url: chosen.url,
               qualityLabel: resolution === '2k' ? '2K QHD (CapCut)' : '1080p Full HD (CapCut)'
             });
