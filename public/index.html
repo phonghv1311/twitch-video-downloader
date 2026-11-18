@@ -440,91 +440,6 @@
           </div>
         </div>
 
-        <!-- YÊU CẦU 2: CẮT ĐOẠN VIDEO (TIME TRIMMING - MẶC ĐỊNH MAX 4 TIẾNG, KHÔNG GIỚI HẠN BẮT BUỘC) -->
-        <div id="timeTrimContainer" class="p-4 rounded-xl bg-dark-950/90 border border-dark-700 space-y-3">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-2">
-              <i data-lucide="scissors" class="w-4 h-4 text-amber-400"></i>
-              <span class="text-xs font-semibold text-slate-200">Cắt đoạn video (Time Trimming)</span>
-            </div>
-            <label class="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" id="trimToggle" onchange="toggleTrimMode()" class="sr-only peer">
-              <div class="w-9 h-5 bg-dark-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-teal-500"></div>
-            </label>
-          </div>
-
-          <div id="trimInputs" class="hidden space-y-3 pt-1">
-            <!-- Start & End Time Inputs -->
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="block text-[11px] text-slate-400 mb-1">Mốc bắt đầu (Start):</label>
-                <input
-                  type="text"
-                  id="trimStart"
-                  value="00:00:00"
-                  class="w-full px-3 py-2 bg-dark-850 border border-dark-700 rounded-lg text-xs font-mono text-white focus:outline-none focus:border-teal-400"
-                  onchange="validateTrimConstraints()"
-                >
-              </div>
-              <div>
-                <label class="block text-[11px] text-slate-400 mb-1">Mốc kết thúc (End):</label>
-                <input
-                  type="text"
-                  id="trimEnd"
-                  value="04:00:00"
-                  class="w-full px-3 py-2 bg-dark-850 border border-dark-700 rounded-lg text-xs font-mono text-white focus:outline-none focus:border-teal-400"
-                  onchange="validateTrimConstraints()"
-                >
-              </div>
-            </div>
-
-            <!-- Tùy chọn Min/Max (Mặc định Max 4 tiếng, không bắt buộc chặn) -->
-            <div class="grid grid-cols-2 gap-3 p-2.5 rounded-lg bg-dark-900 border border-dark-700/60">
-              <div>
-                <label class="block text-[10px] text-slate-400 mb-0.5">Thời lượng Tối thiểu (Tùy chọn):</label>
-                <input
-                  type="text"
-                  id="trimMinDuration"
-                  value="00:00:00"
-                  placeholder="00:00:00 (Không bắt buộc)"
-                  class="w-full px-2.5 py-1.5 bg-dark-950 border border-dark-700 rounded text-xs font-mono text-slate-300"
-                  onchange="validateTrimConstraints()"
-                >
-              </div>
-              <div>
-                <label class="block text-[10px] text-slate-400 mb-0.5">Thời lượng Tối đa (Mặc định 4 tiếng):</label>
-                <input
-                  type="text"
-                  id="trimMaxDuration"
-                  value="04:00:00"
-                  placeholder="04:00:00 (4 tiếng)"
-                  class="w-full px-2.5 py-1.5 bg-dark-950 border border-dark-700 rounded text-xs font-mono text-amber-300"
-                  onchange="validateTrimConstraints()"
-                >
-              </div>
-            </div>
-
-            <!-- Quick Duration Presets (+30s, +1m, +5m, +15m, +30m, +1h, +2h, +4h) -->
-            <div class="flex items-center flex-wrap gap-1.5 text-[10px]">
-              <span class="text-slate-500">Cắt nhanh:</span>
-              <button type="button" onclick="setTrimPreset(30)" class="px-2 py-0.5 bg-dark-800 hover:bg-dark-700 text-slate-300 rounded border border-dark-700">+30s</button>
-              <button type="button" onclick="setTrimPreset(60)" class="px-2 py-0.5 bg-dark-800 hover:bg-dark-700 text-slate-300 rounded border border-dark-700">+1 phút</button>
-              <button type="button" onclick="setTrimPreset(300)" class="px-2 py-0.5 bg-dark-800 hover:bg-dark-700 text-slate-300 rounded border border-dark-700">+5 phút</button>
-              <button type="button" onclick="setTrimPreset(900)" class="px-2 py-0.5 bg-dark-800 hover:bg-dark-700 text-slate-300 rounded border border-dark-700">+15 phút</button>
-              <button type="button" onclick="setTrimPreset(1800)" class="px-2 py-0.5 bg-dark-800 hover:bg-dark-700 text-slate-300 rounded border border-dark-700">+30 phút</button>
-              <button type="button" onclick="setTrimPreset(3600)" class="px-2 py-0.5 bg-dark-800 hover:bg-dark-700 text-slate-300 rounded border border-dark-700">+1 tiếng</button>
-              <button type="button" onclick="setTrimPreset(7200)" class="px-2 py-0.5 bg-dark-800 hover:bg-dark-700 text-slate-300 rounded border border-dark-700">+2 tiếng</button>
-              <button type="button" onclick="setTrimPreset(14400)" class="px-2 py-0.5 bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 rounded border border-teal-500/30">+4 tiếng (Max)</button>
-            </div>
-
-            <!-- Validation Info Badge -->
-            <div id="trimValidationBadge" class="p-2 rounded-lg bg-teal-500/10 border border-teal-500/20 text-[11px] text-teal-300 flex items-center justify-between">
-              <span id="trimCalculatedText">Độ dài đoạn cắt: 4 giờ 00 phút (Tối đa mặc định: 4 tiếng)</span>
-              <span id="trimStatusTag" class="text-[10px] font-bold text-teal-400">HỢP LỆ</span>
-            </div>
-          </div>
-        </div>
-
         <!-- YÊU CẦU 4: THƯ MỤC LƯU TRỮ CHỈ ĐỊNH (E:\MMO\download-video-twitch) -->
         <div>
           <div class="flex items-center justify-between mb-1">
@@ -549,30 +464,16 @@
           </div>
         </div>
 
-        <!-- YÊU CẦU 4: TĂNG LUỒNG TẢI LÊN CÔNG SUẤT TỐI ĐA MAX 30 LUỒNG -->
-        <div>
-          <div class="flex items-center justify-between mb-1.5">
-            <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center space-x-1.5">
-              <i data-lucide="cpu" class="w-3.5 h-3.5 text-teal-400"></i>
-              <span>Số luồng tải song song (Threads):</span>
-            </label>
-            <span id="threadsValue" class="text-xs font-mono font-bold text-teal-400">16 luồng (Cực nhanh ⚡)</span>
+        <!-- YÊU CẦU 1: CHỈ CÓ 1 LUỒNG TẢI DUY NHẤT -->
+        <div class="p-3.5 rounded-xl bg-dark-950/80 border border-dark-700 flex items-center justify-between">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-2.5 h-2.5 rounded-full bg-teal-400 animate-pulse"></div>
+            <div>
+              <span class="block text-xs font-semibold text-slate-200">Chế độ tải: 1 Luồng duy nhất (Single Thread)</span>
+              <span class="block text-[11px] text-slate-400 mt-0.5">Tối ưu độ ổn định, chống nghẽn và ngăn chặn Rate-limit của Twitch</span>
+            </div>
           </div>
-          <input
-            type="range"
-            id="threadsRange"
-            min="3"
-            max="30"
-            value="16"
-            step="1"
-            oninput="updateThreads(this.value)"
-            class="w-full h-1.5 bg-dark-700 rounded-lg appearance-none cursor-pointer accent-teal-500"
-          >
-          <div class="flex justify-between text-[10px] text-slate-500 mt-1">
-            <span>3 luồng</span>
-            <span>16 luồng (Khuyến nghị)</span>
-            <span class="text-teal-400 font-semibold">30 luồng (Công suất tối đa 🚀)</span>
-          </div>
+          <span class="px-2.5 py-1 rounded-lg bg-teal-500/10 text-teal-300 border border-teal-500/30 text-[11px] font-mono font-bold">1 Luồng Tải</span>
         </div>
 
         <!-- Big Download Action Button -->
@@ -746,7 +647,6 @@
     let activeTab = 'search'; // 'search' hoặc 'direct'
     let currentAnalyzedData = null;
     let selectedResolution = '1080p'; // '1080p' hoặc '2k'
-    let isTrimEnabled = false;
     let activeTaskId = null;
     let sseEventSource = null;
 
@@ -837,14 +737,6 @@
       return `${m} phút`;
     }
 
-    function updateThreads(val) {
-      const el = document.getElementById('threadsValue');
-      if (el) {
-        const num = parseInt(val, 10);
-        el.textContent = `${num} luồng ${num >= 25 ? '(Công suất cực đại 🚀)' : num >= 16 ? '(Cực nhanh ⚡)' : ''}`;
-      }
-    }
-
     // Chuyển đổi Tab (Tìm kiếm vs Dán Link)
     function switchMainTab(tab) {
       activeTab = tab;
@@ -925,9 +817,14 @@
       items.forEach(item => {
         const card = document.createElement('div');
         const isSelected = selectedSearchItemIds.has(item.id);
+        const isLive = Boolean(item.isLive || item.type === 'live');
         card.id = `search_card_${item.id}`;
         card.className = `p-3 rounded-xl border flex flex-col justify-between space-y-2.5 transition ${
-          isSelected ? 'bg-dark-850 border-teal-500/80 shadow-lg shadow-teal-500/10' : 'bg-dark-950 border-dark-700/80 hover:border-dark-600'
+          isSelected
+            ? 'bg-dark-850 border-teal-500/80 shadow-lg shadow-teal-500/10'
+            : isLive
+            ? 'bg-dark-950/95 border-rose-500/50 hover:border-rose-400 shadow-lg shadow-rose-950/30'
+            : 'bg-dark-950 border-dark-700/80 hover:border-dark-600'
         }`;
 
         card.innerHTML = `
@@ -940,22 +837,35 @@
                 class="w-4 h-4 rounded text-teal-500 focus:ring-teal-400 bg-dark-800 border-dark-600 cursor-pointer"
               >
             </div>
-            <div class="relative w-28 aspect-video rounded-lg overflow-hidden bg-dark-900 border border-dark-700/80 shrink-0">
+            <div class="relative w-28 aspect-video rounded-lg overflow-hidden bg-dark-900 border ${isLive ? 'border-rose-500/60' : 'border-dark-700/80'} shrink-0">
               <img src="${item.thumbnailUrl || ''}" class="w-full h-full object-cover">
-              <span class="absolute bottom-1 right-1 px-1 py-0.2 rounded bg-black/85 font-mono text-[9px] text-white">
-                ${item.formattedDuration}
-              </span>
-              <span class="absolute top-1 left-1 px-1.5 py-0.2 rounded-full text-[8px] font-bold uppercase ${
-                item.type === 'vod' ? 'bg-twitch-600 text-white' : 'bg-pink-600 text-white'
-              }">
-                ${item.type.toUpperCase()}
-              </span>
+              ${isLive ? `
+                <span class="absolute bottom-1 right-1 px-1.5 py-0.5 rounded bg-rose-600 font-mono text-[9px] text-white font-bold animate-pulse flex items-center space-x-1">
+                  <span>🔴</span>
+                  <span>LIVE</span>
+                </span>
+                <span class="absolute top-1 left-1 px-1.5 py-0.5 rounded-full text-[8px] font-bold uppercase bg-rose-600 text-white shadow-sm">
+                  TRỰC TIẾP
+                </span>
+              ` : `
+                <span class="absolute bottom-1 right-1 px-1 py-0.2 rounded bg-black/85 font-mono text-[9px] text-white">
+                  ${item.formattedDuration}
+                </span>
+                <span class="absolute top-1 left-1 px-1.5 py-0.2 rounded-full text-[8px] font-bold uppercase ${
+                  item.type === 'vod' ? 'bg-twitch-600 text-white' : 'bg-pink-600 text-white'
+                }">
+                  ${item.type.toUpperCase()}
+                </span>
+              `}
             </div>
             <div class="min-w-0 flex-1">
               <h4 class="text-xs font-semibold text-white truncate" title="${item.title}">${item.title}</h4>
-              <div class="text-[10px] text-teal-400 font-medium mt-0.5">${item.broadcaster}</div>
+              <div class="text-[10px] ${isLive ? 'text-rose-400' : 'text-teal-400'} font-medium mt-0.5 flex items-center space-x-1">
+                ${isLive ? '<span class="inline-block w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping"></span>' : ''}
+                <span>${item.broadcaster}</span>
+              </div>
               <div class="flex items-center space-x-2 text-[10px] text-slate-400 mt-1">
-                <span>${(item.viewCount || 0).toLocaleString()} views</span>
+                <span>${(item.viewCount || 0).toLocaleString()} ${isLive ? 'đang xem' : 'views'}</span>
                 <span>•</span>
                 <span class="truncate">${item.game || 'Game'}</span>
               </div>
@@ -963,13 +873,13 @@
           </div>
 
           <div class="flex justify-between items-center pt-1 border-t border-dark-800 text-[11px]">
-            <span class="text-[10px] text-slate-500">${new Date(item.createdAt).toLocaleDateString()}</span>
+            <span class="text-[10px] text-slate-500">${isLive ? '🔴 Đang trực tiếp' : new Date(item.createdAt).toLocaleDateString()}</span>
             <button
               onclick="loadSingleVideoToStudio('${item.url}')"
-              class="px-2.5 py-1 rounded-lg bg-dark-800 hover:bg-teal-500 hover:text-slate-950 text-slate-300 font-medium text-[10px] transition flex items-center space-x-1"
+              class="px-2.5 py-1 rounded-lg ${isLive ? 'bg-rose-950/60 hover:bg-rose-600 text-rose-200 hover:text-white border border-rose-500/40' : 'bg-dark-800 hover:bg-teal-500 hover:text-slate-950 text-slate-300'} font-medium text-[10px] transition flex items-center space-x-1"
             >
-              <i data-lucide="sliders" class="w-3 h-3"></i>
-              <span>Chọn video này</span>
+              <i data-lucide="${isLive ? 'radio' : 'sliders'}" class="w-3 h-3"></i>
+              <span>${isLive ? 'Xem / Tải Live' : 'Chọn video này'}</span>
             </button>
           </div>
         `;
@@ -1025,7 +935,7 @@
 
       const folderName = document.getElementById('batchFolderName').value.trim() || `CapCut_Batch_${Date.now()}`;
       const selectedItems = searchResultsList.filter(item => selectedSearchItemIds.has(item.id));
-      const concurrency = parseInt(document.getElementById('threadsRange')?.value || '16', 10);
+      const concurrency = 1; // Yêu cầu 1: Chỉ 1 luồng tải duy nhất
 
       const btn = document.getElementById('btnStartBatch');
       btn.disabled = true;
@@ -1093,72 +1003,6 @@
       lucide.createIcons();
     }
 
-    // ==================== YÊU CẦU 3: CẮT ĐOẠN MIN VÀ MAX DURATION ====================
-    function toggleTrimMode() {
-      isTrimEnabled = document.getElementById('trimToggle').checked;
-      const inputs = document.getElementById('trimInputs');
-      if (isTrimEnabled) {
-        inputs.classList.remove('hidden');
-        validateTrimConstraints();
-      } else {
-        inputs.classList.add('hidden');
-      }
-    }
-
-    function parseTimeToSeconds(timeStr) {
-      if (!timeStr) return 0;
-      const parts = timeStr.trim().split(':').map(p => parseFloat(p) || 0);
-      if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
-      if (parts.length === 2) return parts[0] * 60 + parts[1];
-      if (parts.length === 1) return parts[0];
-      return 0;
-    }
-
-    function formatSecondsToTime(seconds) {
-      const sec = Math.floor(seconds || 0);
-      const h = Math.floor(sec / 3600);
-      const m = Math.floor((sec % 3600) / 60);
-      const s = sec % 60;
-      if (h > 0) return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-      return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-    }
-
-    function setTrimPreset(durationSec) {
-      const startSec = parseTimeToSeconds(document.getElementById('trimStart').value);
-      const newEndSec = startSec + durationSec;
-      document.getElementById('trimEnd').value = formatSecondsToTime(newEndSec);
-      validateTrimConstraints();
-    }
-
-    function addTrimDuration(addSeconds) {
-      const startSec = parseTimeToSeconds(document.getElementById('trimStart').value);
-      const currentEndSec = parseTimeToSeconds(document.getElementById('trimEnd').value);
-      const newEnd = (currentEndSec > startSec) ? currentEndSec + addSeconds : startSec + addSeconds;
-      document.getElementById('trimEnd').value = formatSecondsToTime(newEnd);
-      validateTrimConstraints();
-    }
-
-    function validateTrimConstraints() {
-      const startSec = parseTimeToSeconds(document.getElementById('trimStart')?.value);
-      const endSec = parseTimeToSeconds(document.getElementById('trimEnd')?.value);
-      const minSec = parseTimeToSeconds(document.getElementById('trimMinDuration')?.value);
-      const maxSec = parseTimeToSeconds(document.getElementById('trimMaxDuration')?.value) || 14400; // 4 tiếng
-
-      const duration = Math.max(0, endSec - startSec);
-      const textEl = document.getElementById('trimCalculatedText');
-      const tagEl = document.getElementById('trimStatusTag');
-      const badge = document.getElementById('trimValidationBadge');
-
-      if (textEl) {
-        textEl.textContent = `Độ dài đoạn cắt: ${formatSecondsToTime(duration)} (Tối đa mặc định: ${formatSecondsToTime(maxSec)})`;
-      }
-      if (tagEl && badge) {
-        tagEl.textContent = 'HỢP LỆ';
-        badge.className = 'p-2 rounded-lg bg-teal-500/10 border border-teal-500/20 text-[11px] text-teal-300 flex items-center justify-between';
-      }
-      return true; // Bỏ giới hạn chặn tải
-    }
-
     // ==================== PHÂN TÍCH LINK & TẢI ĐƠN ====================
     async function pasteFromClipboard() {
       try {
@@ -1199,20 +1043,6 @@
         document.getElementById('videoMetadataCard').classList.remove('hidden');
         document.getElementById('downloadOptionsCard').classList.remove('hidden');
 
-        const trimContainer = document.getElementById('timeTrimContainer');
-        if (data.type === 'vod') {
-          trimContainer.classList.remove('hidden');
-          // Mặc định đoạn cắt tối đa là 4 tiếng (14400s)
-          const defaultMaxCut = Math.min(data.durationSeconds || 14400, 14400);
-          document.getElementById('trimStart').value = '00:00:00';
-          document.getElementById('trimEnd').value = formatSecondsToTime(defaultMaxCut);
-          document.getElementById('trimMinDuration').value = '00:00:00';
-          document.getElementById('trimMaxDuration').value = '04:00:00';
-          validateTrimConstraints();
-        } else {
-          trimContainer.classList.add('hidden');
-        }
-
         showToast('Phân tích thông tin video thành công!', 'success');
       } catch (err) {
         showToast(err.message, 'error');
@@ -1226,13 +1056,13 @@
     function renderVideoMetadata(data) {
       document.getElementById('metaThumbnail').src = data.thumbnailUrl || '';
       document.getElementById('metaDurationBadge').textContent = data.formattedDuration;
-      document.getElementById('metaTypeBadge').textContent = data.type.toUpperCase();
+      document.getElementById('metaTypeBadge').textContent = (data.isLive ? '🔴 LIVE' : data.type).toUpperCase();
       document.getElementById('metaTitle').textContent = data.title;
       document.getElementById('metaTitle').title = data.title;
       document.getElementById('metaBroadcaster').textContent = data.broadcaster;
       document.getElementById('metaGame').textContent = data.game;
-      document.getElementById('metaViews').textContent = `${(data.viewCount || 0).toLocaleString()} lượt xem`;
-      document.getElementById('metaDuration').textContent = `Thời lượng: ${data.formattedDuration}`;
+      document.getElementById('metaViews').textContent = `${(data.viewCount || 0).toLocaleString()} ${data.isLive ? 'đang xem' : 'lượt xem'}`;
+      document.getElementById('metaDuration').textContent = data.isLive ? '🔴 Đang trực tiếp' : `Thời lượng: ${data.formattedDuration}`;
     }
 
     async function startDownloadTask() {
@@ -1241,13 +1071,8 @@
         return;
       }
 
-      if (isTrimEnabled) {
-        validateTrimConstraints();
-      }
-
       const quality = currentAnalyzedData.qualities.find(q => q.id === selectedResolution) || currentAnalyzedData.qualities[0];
       const targetFolder = document.getElementById('singleTargetFolder').value.trim();
-      const concurrency = parseInt(document.getElementById('threadsRange')?.value || '16', 10);
 
       const payload = {
         type: currentAnalyzedData.type,
@@ -1257,23 +1082,16 @@
         thumbnailUrl: currentAnalyzedData.thumbnailUrl,
         duration: currentAnalyzedData.durationSeconds,
         format: 'mp4',
-        resolution: selectedResolution, // 1080p hoặc 2k (Yêu cầu 4)
+        resolution: selectedResolution, // 1080p hoặc 2k
         qualityLabel: quality.label,
-        targetFolder,                    // Yêu cầu 2: lưu vào folder
-        concurrency,
-        isTrimEnabled
+        targetFolder,                    // Lưu vào folder
+        concurrency: 1                   // Yêu cầu 1: Chỉ 1 luồng duy nhất
       };
 
       if (currentAnalyzedData.type === 'clip') {
         payload.downloadUrl = quality.url;
       } else {
         payload.subM3u8Url = quality.url;
-        if (isTrimEnabled) {
-          payload.startTime = document.getElementById('trimStart').value.trim();
-          payload.endTime = document.getElementById('trimEnd').value.trim();
-          payload.minDuration = document.getElementById('trimMinDuration').value.trim();
-          payload.maxDuration = document.getElementById('trimMaxDuration').value.trim();
-        }
       }
 
       const btn = document.getElementById('btnStartDownload');

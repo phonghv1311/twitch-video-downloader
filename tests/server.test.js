@@ -97,21 +97,16 @@ async function testEndpoints() {
   const rDownloadErr = await httpPost('/api/download', {});
   assert.strictEqual(rDownloadErr.status, 400);
 
-  // 7. Kiểm tra POST /api/download với Time Trimming (Không chặn min/max)
-  const rTrimOk = await httpPost('/api/download', {
+  // 7. Kiểm tra POST /api/download với 1 luồng tải duy nhất
+  const rDownloadOk = await httpPost('/api/download', {
     type: 'vod',
-    downloadUrl: 'https://example.com/test.mp4',
-    isTrimEnabled: true,
-    startTime: '00:00:00',
-    endTime: '00:00:10',
-    minDuration: '00:00:00',
-    maxDuration: '04:00:00'
+    title: 'Test Stream Video',
+    downloadUrl: 'https://example.com/test.mp4'
   });
-  assert.strictEqual(rTrimOk.status, 201);
-  const trimJson = JSON.parse(rTrimOk.body);
-  assert.strictEqual(trimJson.success, true);
-  assert.strictEqual(trimJson.metadata.startTimeSec, 0);
-  assert.strictEqual(trimJson.metadata.endTimeSec, 10);
+  assert.strictEqual(rDownloadOk.status, 201);
+  const dlJson = JSON.parse(rDownloadOk.body);
+  assert.strictEqual(dlJson.success, true);
+  assert.strictEqual(dlJson.metadata.concurrency, 1);
 
   console.log('   ✓ GET / (Web UI HTML) -> 200 OK');
   console.log('   ✓ GET /api/system (FFmpeg status & categories) -> 200 OK');
@@ -119,5 +114,5 @@ async function testEndpoints() {
   console.log('   ✓ POST /api/info (Error validation) -> 400 Bad Request');
   console.log('   ✓ POST /api/batch-download (Empty items validation) -> 400 Bad Request');
   console.log('   ✓ POST /api/download (Empty payload validation) -> 400 Bad Request');
-  console.log('   ✓ POST /api/download (Time Trimming unblocked) -> 201 Created');
+  console.log('   ✓ POST /api/download (1 luồng tải duy nhất) -> 201 Created');
 }

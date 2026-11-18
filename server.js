@@ -15,6 +15,7 @@ const {
   parseTwitchUrl,
   getClipInfo,
   getVodInfo,
+  getLiveChannelInfo,
   searchTwitchVideosAndClips,
   parseTimeToSeconds,
   POPULAR_CATEGORIES,
@@ -198,9 +199,12 @@ async function requestHandler(req, res) {
       } else if (parsedTarget.type === 'vod') {
         const vodInfo = await getVodInfo(parsedTarget.id);
         return sendJSON(res, 200, { success: true, ...vodInfo });
+      } else if (parsedTarget.type === 'live') {
+        const liveInfo = await getLiveChannelInfo(parsedTarget.login);
+        return sendJSON(res, 200, { success: true, ...liveInfo });
       } else {
         return sendJSON(res, 400, {
-          error: `Đường dẫn kênh live "${parsedTarget.login}". Hiện tại công cụ ưu tiên tải Video VOD và Clips đã hoàn tất phát sóng.`
+          error: `Đường dẫn Twitch không hợp lệ.`
         });
       }
     } catch (err) {
@@ -217,16 +221,8 @@ async function requestHandler(req, res) {
         return sendJSON(res, 400, { error: 'Tham số tải không hợp lệ. Cần có type và URL tải.' });
       }
 
-      const isTrimEnabled = Boolean(body.isTrimEnabled);
-      let startTimeSec = 0;
-      let endTimeSec = null;
-
-      // Yêu cầu 2: Bỏ giới hạn min max, mặc định max là 4 tiếng
-      if (isTrimEnabled) {
-        startTimeSec = parseTimeToSeconds(body.startTime);
-        endTimeSec = body.endTime ? parseTimeToSeconds(body.endTime) : (startTimeSec + 14400); // Mặc định tối đa 4 tiếng
-      }
-
+      // Yêu cầu 1: Chỉ 1 luồng tải duy nhất
+      // Yêu cầu 3: Xóa chức năng Time Trimming
       const task = await globalTaskManager.createTask({
         type: body.type,
         title: body.title,
@@ -235,14 +231,12 @@ async function requestHandler(req, res) {
         thumbnailUrl: body.thumbnailUrl,
         duration: body.duration,
         format: body.format || 'mp4',
-        resolution: body.resolution || '1080p', // Yêu cầu 4: 1080p hoặc 2k
+        resolution: body.resolution || '1080p', // 1080p hoặc 2k
         qualityLabel: body.qualityLabel,
-        targetFolder: body.targetFolder || '',   // Yêu cầu 2: thư mục gom nhóm
+        targetFolder: body.targetFolder || '',   // Thư mục gom nhóm
         downloadUrl: body.downloadUrl,
         subM3u8Url: body.subM3u8Url,
-        startTimeSec,
-        endTimeSec,
-        concurrency: parseInt(body.concurrency || '8', 10)
+        concurrency: 1
       });
 
       return sendJSON(res, 201, { success: true, taskId: task.id, metadata: task });
@@ -256,7 +250,7 @@ async function requestHandler(req, res) {
   if (req.method === 'POST' && pathname === '/api/batch-download') {
     try {
       const body = await readJSONBody(req);
-      const { items = [], targetFolder = 'CapCut_Batch', resolution = '1080p', format = 'mp4', concurrency = 8 } = body;
+      const { items = [], targetFolder = 'CapCut_Batch', resolution = '1080p', format = 'mp4' } = body;
 
       if (!items || items.length === 0) {
         return sendJSON(res, 400, { error: 'Danh sách video tải hàng loạt rỗng.' });
@@ -277,6 +271,20 @@ async function requestHandler(req, res) {
               thumbnailUrl: clipInfo.thumbnailUrl,
               duration: clipInfo.durationSeconds,
               downloadUrl: chosen.url,
+              qualityLabel: resolution === '2k' ? '2K QHD (CapCut)' : '1080p Full HD (CapCut)'
+            });
+          } else if (item.type === 'live' || item.isLive) {
+            const liveLogin = item.broadcasterLogin || item.login || (item.id ? item.id.replace(/^live_/, '') : '');
+            const liveInfo = await getLiveChannelInfo(liveLogin);
+            const chosen = (liveInfo.qualities || [])[0] || {};
+            resolvedItems.push({
+              type: 'live',
+              title: liveInfo.title,
+              broadcaster: liveInfo.broadcaster,
+              game: liveInfo.game,
+              thumbnailUrl: liveInfo.thumbnailUrl,
+              duration: 0,
+              subM3u8Url: chosen.url,
               qualityLabel: resolution === '2k' ? '2K QHD (CapCut)' : '1080p Full HD (CapCut)'
             });
           } else {
@@ -303,7 +311,7 @@ async function requestHandler(req, res) {
         targetFolder,
         resolution,
         format,
-        concurrency
+        concurrency: 1
       });
 
       return sendJSON(res, 201, batchResult);
