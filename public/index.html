@@ -596,9 +596,15 @@
             <i data-lucide="folder-check" class="w-4 h-4 text-teal-400"></i>
             <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-300">Lịch sử & Thư mục tải về</h2>
           </div>
-          <button onclick="loadHistory()" class="text-slate-400 hover:text-teal-400 transition" title="Làm mới">
-            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-          </button>
+          <div class="flex items-center space-x-2">
+            <button onclick="loadHistory()" class="p-1.5 rounded-lg bg-dark-800 hover:bg-dark-700 text-slate-400 hover:text-teal-400 transition" title="Làm mới">
+              <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+            </button>
+            <button id="btnClearAllHistory" onclick="clearAllHistory()" class="px-2.5 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 border border-rose-500/20 text-[11px] font-medium flex items-center space-x-1.5 transition" title="Xóa toàn bộ lịch sử tải về">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              <span>Xóa toàn bộ</span>
+            </button>
+          </div>
         </div>
 
         <div id="historyList" class="space-y-2 max-h-80 overflow-y-auto pr-1">
@@ -1246,10 +1252,20 @@
         const res = await fetch('/api/history');
         const list = await res.json();
         const container = document.getElementById('historyList');
+        const btnClear = document.getElementById('btnClearAllHistory');
 
         if (!list || list.length === 0) {
           container.innerHTML = `<div class="py-6 text-center text-slate-500 text-xs">Chưa có video nào trong lịch sử.</div>`;
+          if (btnClear) {
+            btnClear.disabled = true;
+            btnClear.classList.add('opacity-40', 'cursor-not-allowed');
+          }
           return;
+        }
+
+        if (btnClear) {
+          btnClear.disabled = false;
+          btnClear.classList.remove('opacity-40', 'cursor-not-allowed');
         }
 
         container.innerHTML = '';
@@ -1295,12 +1311,28 @@
     }
 
     async function deleteHistoryItem(id) {
-      if (!confirm('Bạn có chắc muốn xóa video này?')) return;
+      if (!confirm('Bạn có chắc muốn xóa video này khỏi lịch sử?')) return;
       try {
         await fetch(`/api/history/${id}`, { method: 'DELETE' });
-        showToast('Đã xóa video.', 'info');
+        showToast('Đã xóa video khỏi lịch sử.', 'info');
         loadHistory();
       } catch (e) {}
+    }
+
+    async function clearAllHistory() {
+      if (!confirm('Bạn có chắc chắn muốn xóa toàn bộ lịch sử tải về không? Thao tác này sẽ xóa toàn bộ danh sách tác vụ trong lịch sử.')) return;
+      try {
+        const res = await fetch('/api/history', { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) {
+          showToast('Đã xóa toàn bộ lịch sử thành công.', 'success');
+          loadHistory();
+        } else {
+          showToast(data.error || 'Lỗi khi xóa lịch sử', 'error');
+        }
+      } catch (e) {
+        showToast('Không thể kết nối máy chủ để xóa lịch sử.', 'error');
+      }
     }
 
     function openDocsModal() {

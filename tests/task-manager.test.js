@@ -46,10 +46,21 @@ async function runTests() {
   assert.ok(history.length >= 1);
   assert.strictEqual(history[0].id, meta.id);
 
-  // 5. Xóa tác vụ
+  // 5. Xóa tác vụ đơn lẻ
   await tm.deleteTask(meta.id);
   const deletedCheck = await tm.readMetadata(meta.id);
   assert.strictEqual(deletedCheck, null);
+
+  // 6. Kiểm thử xóa toàn bộ lịch sử (clearAllHistory)
+  await tm.createTask({ type: 'vod', title: 'Task 1' });
+  await tm.createTask({ type: 'clip', title: 'Task 2' });
+  const histBefore = await tm.getTaskHistory();
+  assert.strictEqual(histBefore.length, 2);
+
+  const clearResult = await tm.clearAllHistory();
+  assert.strictEqual(clearResult.success, true);
+  const histAfter = await tm.getTaskHistory();
+  assert.strictEqual(histAfter.length, 0);
 
   // Dọn dẹp thư mục test
   if (fs.existsSync(testDir)) {

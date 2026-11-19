@@ -374,7 +374,14 @@ async function requestHandler(req, res) {
     return sendJSON(res, 200, list);
   }
 
-  // 11. API: Xóa một tác vụ khỏi lịch sử & đĩa cứng
+  // 11. API: Xóa toàn bộ lịch sử tải
+  if ((req.method === 'DELETE' && (pathname === '/api/history' || pathname === '/api/history/clear')) ||
+      (req.method === 'POST' && pathname === '/api/history/clear')) {
+    const result = await globalTaskManager.clearAllHistory();
+    return sendJSON(res, 200, result);
+  }
+
+  // 12. API: Xóa một tác vụ khỏi lịch sử & đĩa cứng
   if (req.method === 'DELETE' && pathname.startsWith('/api/history/')) {
     const taskId = pathname.replace('/api/history/', '').trim();
     if (!taskId) return sendJSON(res, 400, { error: 'Vui lòng cung cấp taskId để xóa' });

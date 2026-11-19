@@ -66,6 +66,20 @@ function httpPost(pathStr, payload) {
   });
 }
 
+function httpDelete(pathStr) {
+  return new Promise((resolve, reject) => {
+    const req = http.request(`http://localhost:3456${pathStr}`, {
+      method: 'DELETE'
+    }, (res) => {
+      let body = '';
+      res.on('data', chunk => body += chunk);
+      res.on('end', () => resolve({ status: res.statusCode, headers: res.headers, body }));
+    });
+    req.on('error', reject);
+    req.end();
+  });
+}
+
 async function testEndpoints() {
   // 1. Kiểm tra trang chủ GET /
   const rIndex = await httpGet('/');
@@ -108,6 +122,11 @@ async function testEndpoints() {
   assert.strictEqual(dlJson.success, true);
   assert.strictEqual(dlJson.metadata.concurrency, 1);
 
+  // 8. Kiểm tra DELETE /api/history (Xóa toàn bộ lịch sử)
+  const rClearHist = await httpDelete('/api/history');
+  assert.strictEqual(rClearHist.status, 200);
+  assert.strictEqual(JSON.parse(rClearHist.body).success, true);
+
   console.log('   ✓ GET / (Web UI HTML) -> 200 OK');
   console.log('   ✓ GET /api/system (FFmpeg status & categories) -> 200 OK');
   console.log('   ✓ GET /api/history (Task history) -> 200 OK');
@@ -115,4 +134,5 @@ async function testEndpoints() {
   console.log('   ✓ POST /api/batch-download (Empty items validation) -> 400 Bad Request');
   console.log('   ✓ POST /api/download (Empty payload validation) -> 400 Bad Request');
   console.log('   ✓ POST /api/download (1 luồng tải duy nhất) -> 201 Created');
+  console.log('   ✓ DELETE /api/history (Xóa toàn bộ lịch sử) -> 200 OK');
 }
